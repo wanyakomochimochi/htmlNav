@@ -8,7 +8,7 @@ interface HtmlNode {
   children: HtmlNode[];
 }
 
-// --- ご提示の parseHtmlToTree をそのまま利用 ---
+// HTMLをパースしてツリー構造を作成する関数
 function parseHtmlToTree(text: string): HtmlNode {
   const root: HtmlNode = {
     name: "root",
@@ -265,7 +265,6 @@ export function jumpChild() {
     }
   }
 }
-
 
 function isContentNode(node: HtmlNode): boolean {
   return node.type === "tag" || node.type === "selfTag" || node.type === "text";
