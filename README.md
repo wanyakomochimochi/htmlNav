@@ -1,4 +1,4 @@
-# html-navigation-vscode
+# html-jump-navigator
 
 This VS Code extension provides intuitive navigation within HTML code.
 It allows you to jump between parent/child nodes, sibling nodes, and tag attributes, making editing complex HTML structures faster and more efficient.
@@ -28,6 +28,27 @@ It allows you to jump between parent/child nodes, sibling nodes, and tag attribu
 
 - **Jump Inside**
   From a tag or self-closing tag, jump directly into its first attribute.
+
+---
+
+## Example
+
+Given the following code:
+
+```html
+<form action="./payment_page" method="get">
+  <h2>Register for the meetup</h2>
+  <p>
+    <label for="comments">Any other comments:</label>
+    <textarea id="comments" name="comments"></textarea>
+  </p>
+</form>
+```
+
+- From `<textarea ...>`, `Jump Inside` will move into the `id` attribute.
+- From `id="comments"`, `Jump Parent` moves back to `id`.
+- From `id="comments"`, `Jump Sibling (next)` moves to `name="comments"`.
+- From the `<label>` tag, `Jump Child` moves into its text content.
 
 ---
 
@@ -83,27 +104,6 @@ This ensures the shortcuts work only when editing HTML files, avoiding conflicts
 
 ---
 
-## Example
-
-Given the following code:
-
-```html
-<form action="./payment_page" method="get">
-  <h2>Register for the meetup</h2>
-  <p>
-    <label for="comments">Any other comments:</label>
-    <textarea id="comments" name="comments"></textarea>
-  </p>
-</form>
-```
-
-- From `<textarea ...>`, `Jump Inside` will move into the `id` attribute.
-- From `id="comments"`, `Jump Parent` moves back to `id`.
-- From `id="comments"`, `Jump Sibling (next)` moves to `name="comments"`.
-- From the `<label>` tag, `Jump Child` moves into its text content.
-
----
-
 ## Installation
 
 You can install **HTML Navigation for VS Code** directly from the Visual Studio Code Marketplace:
@@ -128,3 +128,10 @@ Once installed, the extension commands are available immediately. You can access
 ## License
 
 MIT License
+
+---
+
+May your bugs be tiny and your commits legendary. 🚀
+
+Developed by Wanyako, a developer from Japan.
+Check out the repository: [https://github.com/wanyakomochimochi/htmlNav.git]
