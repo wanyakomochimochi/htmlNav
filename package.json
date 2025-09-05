@@ -1,0 +1,61 @@
+{
+  "main": "dist/extension.js",
+  "scripts": {
+    "compile": "esbuild src/extension.ts --bundle --platform=node --outfile=dist/extension.js"
+  },
+  "name": "html-jump-navigator",
+  "displayName": "HTML Jump Navigator",
+  "description": "Navigate HTML nodes: jump to parent, child, sibling, or inside (text/attribute).",
+  "version": "1.0.0",
+  "icon": "icon.png",
+  "publisher": "wanyako",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wanyakomochimochi/html-navigation-vscode.git"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^24.3.1",
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.23.1",
+    "mocha": "^11.7.2",
+    "typescript": "^5.9.2"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.jumpParent",
+        "title": "Jump to Parent Node"
+      },
+      {
+        "command": "extension.jumpChild",
+        "title": "Jump to Child Node"
+      },
+      {
+        "command": "extension.jumpSiblingNext",
+        "title": "Jump to Next Sibling Node"
+      },
+      {
+        "command": "extension.jumpSiblingPrev",
+        "title": "Jump to Previous Sibling Node"
+      },
+      {
+        "command": "extension.jumpInside",
+        "title": "Jump Inside Node (Text / Attribute)"
+      }
+    ]
+  },
+  "compilerOptions": {
+    "types": [
+      "node",
+      "mocha"
+    ]
+  }
+}
