@@ -8,7 +8,6 @@ interface HtmlNode {
   children: HtmlNode[];
 }
 
-
 //  --- HTMLパーサー ---
 
 // HTMLをパースしてツリー構造を作成する関数
@@ -188,14 +187,10 @@ function moveCursorTo(editor: vscode.TextEditor, offset: number) {
   editor.revealRange(new vscode.Range(pos, pos));
 }
 
-
 //  --- キャッシュ付きパース関数 ---
 
 // --- グローバルキャッシュ ---
-const parsedCache = new Map<
-  string,
-  { version: number; root: HtmlNode }
->();
+const parsedCache = new Map<string, { version: number; root: HtmlNode }>();
 
 function getParsedTree(document: vscode.TextDocument): HtmlNode {
   const key = document.uri.toString();
@@ -212,14 +207,12 @@ function getParsedTree(document: vscode.TextDocument): HtmlNode {
   return root;
 }
 
-
 // --- コマンド実装 ---
 
 // 親ノードに移動
 export function jumpParent() {
   const editor = vscode.window.activeTextEditor;
   if (!editor) return;
-
 
   const root = getParsedTree(editor.document);
   const offset = editor.document.offsetAt(editor.selection.active);
@@ -241,12 +234,11 @@ export function jumpParent() {
   }
 }
 
-
 // 子ノードに移動（最初の子）
 export function jumpChild() {
   const editor = vscode.window.activeTextEditor;
   if (!editor) return;
-  
+
   const root = getParsedTree(editor.document);
   const offset = editor.document.offsetAt(editor.selection.active);
   const node = findNodeAtOffset(root, offset);
@@ -307,7 +299,6 @@ function isAttributeNode(node: HtmlNode): boolean {
 export function jumpSibling(direction: "next" | "prev") {
   const editor = vscode.window.activeTextEditor;
   if (!editor) return;
-
 
   const root = getParsedTree(editor.document);
   const offset = editor.document.offsetAt(editor.selection.active);
@@ -434,12 +425,9 @@ export function jumpSibling(direction: "next" | "prev") {
   }
 }
 
-
-
 export function jumpInside() {
   const editor = vscode.window.activeTextEditor;
   if (!editor) return;
-
 
   const root = getParsedTree(editor.document);
   const offset = editor.document.offsetAt(editor.selection.active);
@@ -457,9 +445,14 @@ export function jumpInside() {
     if (firstAttr) {
       moveCursorTo(editor, firstAttr.start);
     }
+  } // --- 属性にいる場合は、属性値に移動 ---
+  else if (node.type === "attribute") {
+    const valueNode = node.children.find((c) => c.type === "attrValue");
+    if (valueNode) {
+      moveCursorTo(editor, valueNode.start);
+    }
   }
 }
-
 
 // --- activate/deactivate ---
 export function activate(context: vscode.ExtensionContext) {
