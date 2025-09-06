@@ -8,6 +8,9 @@ interface HtmlNode {
   children: HtmlNode[];
 }
 
+
+//  --- HTMLパーサー ---
+
 // HTMLをパースしてツリー構造を作成する関数
 function parseHtmlToTree(text: string): HtmlNode {
   const root: HtmlNode = {
@@ -185,13 +188,40 @@ function moveCursorTo(editor: vscode.TextEditor, offset: number) {
   editor.revealRange(new vscode.Range(pos, pos));
 }
 
+
+//  --- キャッシュ付きパース関数 ---
+
+// --- グローバルキャッシュ ---
+const parsedCache = new Map<
+  string,
+  { version: number; root: HtmlNode }
+>();
+
+function getParsedTree(document: vscode.TextDocument): HtmlNode {
+  const key = document.uri.toString();
+  const cached = parsedCache.get(key);
+
+  if (cached && cached.version === document.version) {
+    return cached.root; // 変更なし → キャッシュ利用
+  }
+
+  // 変更あり → 再パース
+  const text = document.getText();
+  const root = parseHtmlToTree(text);
+  parsedCache.set(key, { version: document.version, root });
+  return root;
+}
+
+
+// --- コマンド実装 ---
+
 // 親ノードに移動
 export function jumpParent() {
   const editor = vscode.window.activeTextEditor;
   if (!editor) return;
 
-  const text = editor.document.getText();
-  const root = parseHtmlToTree(text);
+
+  const root = getParsedTree(editor.document);
   const offset = editor.document.offsetAt(editor.selection.active);
   const node = findNodeAtOffset(root, offset);
   if (!node) return;
@@ -216,8 +246,8 @@ export function jumpParent() {
 export function jumpChild() {
   const editor = vscode.window.activeTextEditor;
   if (!editor) return;
-  const text = editor.document.getText();
-  const root = parseHtmlToTree(text);
+  
+  const root = getParsedTree(editor.document);
   const offset = editor.document.offsetAt(editor.selection.active);
   const node = findNodeAtOffset(root, offset);
   if (!node || node.children.length === 0) return;
@@ -278,8 +308,8 @@ export function jumpSibling(direction: "next" | "prev") {
   const editor = vscode.window.activeTextEditor;
   if (!editor) return;
 
-  const text = editor.document.getText();
-  const root = parseHtmlToTree(text);
+
+  const root = getParsedTree(editor.document);
   const offset = editor.document.offsetAt(editor.selection.active);
 
   const node = findNodeAtOffset(root, offset);
@@ -410,8 +440,8 @@ export function jumpInside() {
   const editor = vscode.window.activeTextEditor;
   if (!editor) return;
 
-  const text = editor.document.getText();
-  const root = parseHtmlToTree(text);
+
+  const root = getParsedTree(editor.document);
   const offset = editor.document.offsetAt(editor.selection.active);
 
   const node = findNodeAtOffset(root, offset);
