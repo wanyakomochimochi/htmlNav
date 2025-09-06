@@ -1,8 +1,12 @@
 import * as vscode from "vscode";
 
+// --- NodeTypeユニオン型 ---
+type NodeType = "tag" | "selfTag" | "attribute" | "attrValue" | "text";
+
+// --- HtmlNode interface ---
 interface HtmlNode {
   name: string;
-  type: "tag" | "selfTag" | "attribute" | "attrValue" | "text";
+  type: NodeType;
   start: number;
   end: number;
   children: HtmlNode[];
@@ -204,8 +208,16 @@ function getParsedTree(document: vscode.TextDocument): HtmlNode {
   const text = document.getText();
   const root = parseHtmlToTree(text);
   parsedCache.set(key, { version: document.version, root });
+  parentChildStack.delete(key);
   return root;
 }
+
+// --- 親ノード位置スタック ---
+// Map<document.uri, Map<親ノード.start, Array<{offset, type}>>>
+const parentChildStack = new Map<
+  string,
+  Map<number, { offset: number; type: NodeType }[]>
+>();
 
 // --- コマンド実装 ---
 
@@ -214,6 +226,7 @@ export function jumpParent() {
   const editor = vscode.window.activeTextEditor;
   if (!editor) return;
 
+  const docKey = editor.document.uri.toString();
   const root = getParsedTree(editor.document);
   const offset = editor.document.offsetAt(editor.selection.active);
   const node = findNodeAtOffset(root, offset);
@@ -222,16 +235,13 @@ export function jumpParent() {
   const parent = findParent(root, node);
   if (!parent) return;
 
-  // --- 属性値にいるときは親属性に移動 ---
-  if (node.type === "attrValue" && parent.type === "attribute") {
-    moveCursorTo(editor, parent.start);
-    return;
-  }
+  // --- 現在位置をスタックに保存 ---
+  if (!parentChildStack.has(docKey)) parentChildStack.set(docKey, new Map());
+  const stackMap = parentChildStack.get(docKey)!;
+  if (!stackMap.has(parent.start)) stackMap.set(parent.start, []);
+  stackMap.get(parent.start)!.push({ offset, type: node.type });
 
-  // --- 通常のタグジャンプ処理 ---
-  if (parent.type === "tag" || parent.type === "selfTag") {
-    moveCursorTo(editor, parent.start);
-  }
+  moveCursorTo(editor, parent.start);
 }
 
 // 子ノードに移動（最初の子）
@@ -239,6 +249,7 @@ export function jumpChild() {
   const editor = vscode.window.activeTextEditor;
   if (!editor) return;
 
+  const docKey = editor.document.uri.toString();
   const root = getParsedTree(editor.document);
   const offset = editor.document.offsetAt(editor.selection.active);
   const node = findNodeAtOffset(root, offset);
@@ -256,6 +267,29 @@ export function jumpChild() {
   }
 
   // --- それ以外は従来どおり子ノードに移動 ---
+
+  // --- 復元情報があれば、親ノードのスタックから復元 ---
+  const stackMap = parentChildStack.get(docKey);
+  if (stackMap) {
+    const savedStack = stackMap.get(node.start);
+    if (savedStack && savedStack.length > 0) {
+      // peek して最後の content ノードを探す
+      const idx = [...savedStack]
+        .reverse()
+        .findIndex(
+          (c) => c.type === "tag" || c.type === "selfTag" || c.type === "text"
+        );
+      if (idx !== -1) {
+        const savedPos = savedStack[savedStack.length - 1 - idx]; // peek
+        moveCursorTo(editor, savedPos.offset);
+        // 移動成功したらスタックから削除
+        savedStack.splice(savedStack.length - 1 - idx, 1);
+        return;
+      }
+    }
+  }
+
+  // --- 復元情報がなければ、最初の有効な子ノードへ移動 ---
   const children = node.children;
   let idx = 0;
   let attempts = 0;
@@ -429,28 +463,35 @@ export function jumpInside() {
   const editor = vscode.window.activeTextEditor;
   if (!editor) return;
 
+  const docKey = editor.document.uri.toString();
   const root = getParsedTree(editor.document);
   const offset = editor.document.offsetAt(editor.selection.active);
 
   const node = findNodeAtOffset(root, offset);
   if (!node) return;
 
-  // 現在のノードがタグか自己完結タグの場合のみ処理
-  if (node.type === "tag" || node.type === "selfTag") {
-    // 子ノードの中から最初の属性ノードを探す
-    const firstAttr = node.children.find(
-      (child) => child.type === "attribute" || child.type === "attrValue"
-    );
+  // --- 復元情報があれば、親ノードのスタックから復元 ---
+  const stackMap = parentChildStack.get(docKey);
+  if (stackMap) {
+    const savedStack = stackMap.get(node.start);
+    if (savedStack && savedStack.length > 0) {
+      // peek して最後の非コンテンツノードを探す
+      const idx = [...savedStack]
+        .reverse()
+        .findIndex((c) => c.type === "attribute" || c.type === "attrValue");
+      if (idx !== -1) {
+        const savedPos = savedStack[savedStack.length - 1 - idx]; // peek
+        moveCursorTo(editor, savedPos.offset);
+        // 移動成功したらスタックから削除
+        savedStack.splice(savedStack.length - 1 - idx, 1);
+        return;
+      }
+    }
+  }
 
-    if (firstAttr) {
-      moveCursorTo(editor, firstAttr.start);
-    }
-  } // --- 属性にいる場合は、属性値に移動 ---
-  else if (node.type === "attribute") {
-    const valueNode = node.children.find((c) => c.type === "attrValue");
-    if (valueNode) {
-      moveCursorTo(editor, valueNode.start);
-    }
+  // --- 子ノードがあれば最初の子に移動 ---
+  if (node.children.length > 0) {
+    moveCursorTo(editor, node.children[0].start);
   }
 }
 
