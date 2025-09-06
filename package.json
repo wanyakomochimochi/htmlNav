@@ -3,10 +3,10 @@
   "scripts": {
     "compile": "esbuild src/extension.ts --bundle --platform=node --outfile=dist/extension.js"
   },
-  "name": "html-jump-navigator",
-  "displayName": "HTML Jump Navigator",
+  "name": "html-tag-jump-navigator",
+  "displayName": "HTML Tag Jump Navigator",
   "description": "Navigate HTML nodes: jump to parent, child, sibling, or inside (text/attribute).",
-  "version": "1.1.1",
+  "version": "1.1.3",
   "icon": "icon.png",
   "publisher": "wanyako",
   "repository": {

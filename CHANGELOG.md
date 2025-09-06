@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.3] - 2025-09-06
+
+- Renamed extension to "HTML Tag Jump Navigator".
+
+## [1.1.2] - 2025-09-06
+
+- Accidental release. No changes.
+
 ## [1.1.1] - 2025-09-06
 
 - Fixed display issues in Marketplace README caused by HTML tags in lists.

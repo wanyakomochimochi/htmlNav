@@ -1,4 +1,4 @@
-# html-jump-navigator
+# html-tag-jump-navigator
 
 This VS Code extension provides intuitive navigation within HTML code.
 It allows you to jump between parent/child nodes, sibling nodes, and tag attributes, making editing complex HTML structures faster and more efficient. It also remembers previous cursor positions when moving up to a parent node, allowing you to jump back to child nodes seamlessly, while skipping content nodes as appropriate.
