@@ -63,27 +63,17 @@ Consider the following HTML code:
 
 Example actions:
 
-- From <textarea ...>, Jump Inside moves to its first child node (id attribute).
-
-- From id="comments", Jump Parent moves back to the <textarea> node.
-
+- From `<textarea ...>`, Jump Inside moves to its first child node (id attribute).
+- From id="comments", Jump Parent moves back to the `<textarea>` node.
 - From id="comments", Jump Sibling (next) moves to name="comments".
-
 - From name="comments", Jump Sibling (prev) moves back to id="comments".
-
-- From the <label> tag, Jump Child moves into its text content "Any other comments:".
-
-- From the <p> tag, Jump Child moves to the first child <label>.
-
-- From the <form> tag, Jump Child moves to the first child <h2>.
-
-- From <h2>, Jump Sibling (next) moves to the <p> tag.
-
-- From <button>, Jump Inside moves to its type attribute node.
-
-- From type="submit", Jump Parent moves back to the <button> tag.
-
-- Jump Sibling (next) from <form> does nothing as there is no sibling.
+- From the `<label>` tag, Jump Child moves into its text content "Any other comments:".
+- From the `<p>` tag, Jump Child moves to the first child `<label>`.
+- From the `<form>` tag, Jump Child moves to the first child `<h2>`.
+- From `<h2>`, Jump Sibling (next) moves to the `<p>` tag.
+- From `<button>`, Jump Inside moves to its type attribute node.
+- From type="submit", Jump Parent moves back to the `<button>` tag.
+- Jump Sibling (next) from `<form>` does nothing as there is no sibling.
 
 This example demonstrates how parent, child, sibling, and attribute jumps behave clearly and - comprehensively.
 
