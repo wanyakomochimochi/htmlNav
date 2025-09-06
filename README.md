@@ -8,18 +8,21 @@ It allows you to jump between parent/child nodes, sibling nodes, and tag attribu
 ## Features
 
 - **Jump to Parent** (`jumpParent`)
+
   - Move the cursor from the current node to its parent tag.
   - If inside an attribute value (`"..."`), jump back to the attribute name.
   - Otherwise, jump to the enclosing parent tag.
   - The previous cursor position is stored in a stack for later restoration.
 
 - **Jump to Child** (`jumpChild`)
+
   - Move the cursor to the first valid child node.
   - Restores the last saved cursor position from the parent stack if available.
   - If on an attribute, jump inside its value (if it exists).
   - Skips attribute nodes and moves to content nodes.
 
 - **Jump to Sibling** (`jumpSiblingNext` / `jumpSiblingPrev`)
+
   - Move to the next or previous sibling node.
   - When inside content (text/tag), attribute nodes are skipped.
   - When inside attributes, content nodes are skipped.
@@ -56,8 +59,8 @@ Consider the following HTML code:
   <input type="text" name="username" />
   <button type="submit">Submit</button>
 </form>
-
 ```
+
 Example actions:
 
 - From <textarea ...>, Jump Inside moves to its first child node (id attribute).
@@ -84,16 +87,15 @@ Example actions:
 
 This example demonstrates how parent, child, sibling, and attribute jumps behave clearly and - comprehensively.
 
-
 ## Commands
 
 | Command                     | Description                      | Example Keybinding |
-| --------------------------- | -------------------------------- | ---------------- |
-| `extension.jumpParent`      | Jump to the parent node          | `Alt+Up`         |
-| `extension.jumpChild`       | Jump to the first child node     | `Alt+Down`       |
-| `extension.jumpSiblingNext` | Jump to the next sibling         | `Alt+Right`      |
-| `extension.jumpSiblingPrev` | Jump to the previous sibling     | `Alt+Left`       |
-| `extension.jumpInside`      | Jump inside the first child node | `Alt+I`          |
+| --------------------------- | -------------------------------- | ------------------ |
+| `extension.jumpParent`      | Jump to the parent node          | `Alt+Up`           |
+| `extension.jumpChild`       | Jump to the first child node     | `Alt+Down`         |
+| `extension.jumpSiblingNext` | Jump to the next sibling         | `Alt+Right`        |
+| `extension.jumpSiblingPrev` | Jump to the previous sibling     | `Alt+Left`         |
+| `extension.jumpInside`      | Jump inside the first child node | `Alt+I`            |
 
 ---
 
@@ -127,7 +129,6 @@ This example demonstrates how parent, child, sibling, and attribute jumps behave
     "when": "editorTextFocus && editorLangId == 'html'"
   }
 ]
-
 ```
 
 ## Installation

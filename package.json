@@ -6,7 +6,7 @@
   "name": "html-jump-navigator",
   "displayName": "HTML Jump Navigator",
   "description": "Navigate HTML nodes: jump to parent, child, sibling, or inside (text/attribute).",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "icon": "icon.png",
   "publisher": "wanyako",
   "repository": {
